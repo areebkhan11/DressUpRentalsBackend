@@ -1,13 +1,15 @@
-import { Controller, Req, Res, Post, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Req, Res, Post, UseInterceptors } from "@nestjs/common";
 import { AppInterceptor } from "./app.interceptor";
 import { Request, Response } from "express";
+import { AppService } from "./app.service";
 
 
 @Controller("app")
 export class AppController {
-    @Post('')
-    @UseInterceptors(AppInterceptor)
+    constructor(private AppService: AppService) { }
+    @Get('')
+    // @UseInterceptors(AppInterceptor)
     helloworld(): any {
-        return
+        return this.AppService.getHello()
     }
 }
