@@ -27,21 +27,48 @@ export class AuthService {
     }
 
     async register(registerDto: RegisterDto) {
-        const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+        // Check if user already exists
+        const existingUser = await this.usersService.findOne(registerDto.email);
+        if (existingUser) {
+            throw new UnauthorizedException('User already registered');
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(registerDto.password, 12);
+        console.log(hashedPassword, "<----hashedPassword");
+
+        // Create a new user with the hashed password
         const newUser = await this.usersService.create({
             ...registerDto,
             password: hashedPassword,
         });
 
+        // Verify that the user has been created and saved correctly
+        const savedUser = await this.usersService.findOne(newUser.email);
+        console.log(savedUser, "<----savedUser after creation");
+
+        // Return tokens
         return this.createTokens(newUser.email);
     }
 
     async login(loginDto: LoginDto) {
+        // Find the user by email
         const user = await this.usersService.findOne(loginDto.email);
-        if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
+        console.log(user, "<----user found in login");
+
+        // Verify user exists and password matches
+        if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
+        const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+        console.log(isPasswordValid, "<----isPasswordValid");
+
+        if (!isPasswordValid) {
+            throw new UnauthorizedException('Invalid credentials');
+        }
+
+        // Return tokens
         return this.createTokens(user.email);
     }
 
@@ -51,6 +78,7 @@ export class AuthService {
         const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
         return {
+            email: payload.email,
             accessToken,
             refreshToken,
             expiresIn: 3600, // 1 hour in seconds
