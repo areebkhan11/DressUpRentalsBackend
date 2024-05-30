@@ -1,4 +1,3 @@
-// src/users/users.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -23,6 +22,17 @@ export class UsersService {
         return this.usersRepository.save(newUser);
     }
 
+    async createOAuthUser(user: any): Promise<User> {
+        const newUser = this.usersRepository.create({
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            picture: user.picture,
+            provider: user.provider,
+        });
+        return this.usersRepository.save(newUser);
+    }
+
     async findAll(): Promise<User[]> {
         return this.usersRepository.find();
     }
@@ -32,7 +42,7 @@ export class UsersService {
     }
 
     async findOne(email: string): Promise<User | undefined> {
-        return this.usersRepository.findOne({ where: { email } }); // Specify 'where' option here
+        return this.usersRepository.findOne({ where: { email } });
     }
 
     async update(id: number, updateUserDto: RegisterDto): Promise<User> {

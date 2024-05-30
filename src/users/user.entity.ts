@@ -1,4 +1,3 @@
-// src/users/entities/user.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -12,9 +11,9 @@ export class User {
     @ApiProperty({ description: 'The email of the user' })
     email: string;
 
-    @Column()
+    @Column({ nullable: true })
     @ApiProperty({ description: 'The hashed password of the user' })
-    password: string;
+    password?: string;
 
     @Column()
     @ApiProperty({ description: 'The first name of the user' })
@@ -23,6 +22,10 @@ export class User {
     @Column()
     @ApiProperty({ description: 'The last name of the user' })
     lastName: string;
+
+    @Column({ nullable: true })
+    @ApiProperty({ description: 'The profile picture of the user' })
+    picture?: string;
 
     @Column()
     @ApiProperty({ description: 'The authentication provider of the user' })

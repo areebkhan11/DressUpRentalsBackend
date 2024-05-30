@@ -21,6 +21,7 @@ export class AuthController {
     @Post('login')
     @ApiOperation({ summary: 'Login a user' })
     async login(@Body() loginDto: LoginDto) {
+        console.log("Login")
         return this.authService.login(loginDto);
     }
 
@@ -29,7 +30,7 @@ export class AuthController {
     @ApiOperation({ summary: 'Google authentication' })
     async googleAuth(@Req() req) { }
 
-    @Get('google/callback')
+    @Post('google/callback')
     @UseGuards(AuthGuard('google'))
     @ApiOperation({ summary: 'Google authentication callback' })
     async googleAuthRedirect(@Req() req) {

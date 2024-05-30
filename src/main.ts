@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // app.enableCors();
+  app.enableCors();
   // Set up global validation pipe
   app.useGlobalPipes(new ValidationPipe());
 

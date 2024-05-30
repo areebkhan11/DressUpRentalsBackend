@@ -14,61 +14,40 @@ export class AuthService {
     ) { }
 
     async googleLogin(req) {
+        console.log(req.user, "<----req.user.email")
         if (!req.user) {
             return 'No user from Google';
         }
-
-        const user = await this.usersService.findOne(req.user.email);
-        if (!user) {
-            this.usersService.create(req.user);
-        }
-
         return this.createTokens(req.user.email);
     }
 
+    async validateGoogleUser(user: any) {
+        let existingUser = await this.usersService.findOne(user.email);
+        console.log(existingUser, "<----existingUser")
+        if (!existingUser) {
+            existingUser = await this.usersService.createOAuthUser(user);
+        }
+        return existingUser;
+    }
+
     async register(registerDto: RegisterDto) {
-        // Check if user already exists
         const existingUser = await this.usersService.findOne(registerDto.email);
         if (existingUser) {
             throw new UnauthorizedException('User already registered');
         }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(registerDto.password, 12);
-        console.log(hashedPassword, "<----hashedPassword");
-
-        // Create a new user with the hashed password
-        const newUser = await this.usersService.create({
-            ...registerDto,
-            password: hashedPassword,
-        });
-
-        // Verify that the user has been created and saved correctly
-        const savedUser = await this.usersService.findOne(newUser.email);
-        console.log(savedUser, "<----savedUser after creation");
-
-        // Return tokens
+        const newUser = await this.usersService.create(registerDto);
         return this.createTokens(newUser.email);
     }
 
     async login(loginDto: LoginDto) {
-        // Find the user by email
         const user = await this.usersService.findOne(loginDto.email);
-        console.log(user, "<----user found in login");
-
-        // Verify user exists and password matches
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');
         }
-
         const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
-        console.log(isPasswordValid, "<----isPasswordValid");
-
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
         }
-
-        // Return tokens
         return this.createTokens(user.email);
     }
 
@@ -93,7 +72,6 @@ export class AuthService {
             if (!user) {
                 throw new UnauthorizedException('User not found');
             }
-
             return this.createTokens(user.email);
         } catch (e) {
             throw new UnauthorizedException('Invalid refresh token');
