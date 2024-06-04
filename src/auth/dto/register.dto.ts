@@ -18,4 +18,8 @@ export class RegisterDto {
     @ApiProperty({ example: 'Doe', description: 'The last name of the user' })
     @IsString()
     lastName: string;
+
+    @ApiProperty({ example: 'Doe', description: 'Picture name of the user' })
+    @IsString()
+    picture: string;
 }

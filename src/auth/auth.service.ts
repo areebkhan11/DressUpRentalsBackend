@@ -5,6 +5,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -13,21 +14,32 @@ export class AuthService {
         private readonly usersService: UsersService,
     ) { }
 
-    async googleLogin(req) {
-        console.log(req.user, "<----req.user.email")
-        if (!req.user) {
-            return 'No user from Google';
-        }
-        return this.createTokens(req.user.email);
-    }
 
-    async validateGoogleUser(user: any) {
-        let existingUser = await this.usersService.findOne(user.email);
-        console.log(existingUser, "<----existingUser")
-        if (!existingUser) {
-            existingUser = await this.usersService.createOAuthUser(user);
+    async handleGoogleCallback(accessToken: string) {
+        try {
+            const response = await axios.get(
+                `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
+            );
+            const profile = response.data;
+            console.log(profile, "<----response")
+            let user = await this.usersService.findOne(profile.email);
+            if (!user) {
+                console.log("Asdasd")
+                user = await this.usersService.createOAuthUser({
+                    email: profile.email,
+                    firstName: profile.given_name,
+                    lastName: profile.family_name,
+                    picture: profile.picture,
+                    provider: 'google'
+                });
+            }
+
+            console.log(user, "<----user")
+            return this.createTokens(user.email);
+        } catch (error) {
+            console.log(error, "<----")
+            throw new UnauthorizedException('Invalid Google token');
         }
-        return existingUser;
     }
 
     async register(registerDto: RegisterDto) {
