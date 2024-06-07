@@ -21,7 +21,7 @@ export class User {
 
     @Column()
     @ApiProperty({ description: 'The last name of the user' })
-    lastName: string;
+    lastName?: string;
 
     @Column({ nullable: true })
     @ApiProperty({ description: 'The profile picture of the user' })

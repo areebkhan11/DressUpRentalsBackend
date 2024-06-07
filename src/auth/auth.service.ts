@@ -21,23 +21,18 @@ export class AuthService {
                 `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
             );
             const profile = response.data;
-            console.log(profile, "<----response")
             let user = await this.usersService.findOne(profile.email);
-            if (!user) {
-                console.log("Asdasd")
+            if (user === null || !user || user === undefined) {
                 user = await this.usersService.createOAuthUser({
                     email: profile.email,
                     firstName: profile.given_name,
-                    lastName: profile.family_name,
+                    lastName: profile.family_name ?? "",
                     picture: profile.picture,
                     provider: 'google'
                 });
             }
-
-            console.log(user, "<----user")
-            return this.createTokens(user.email);
+            return this.createTokens(user);
         } catch (error) {
-            console.log(error, "<----")
             throw new UnauthorizedException('Invalid Google token');
         }
     }
@@ -48,7 +43,7 @@ export class AuthService {
             throw new UnauthorizedException('User already registered');
         }
         const newUser = await this.usersService.create(registerDto);
-        return this.createTokens(newUser.email);
+        return this.createTokens(newUser);
     }
 
     async login(loginDto: LoginDto) {
@@ -60,19 +55,25 @@ export class AuthService {
         if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
         }
-        return this.createTokens(user.email);
+        return this.createTokens(user);
     }
 
-    async createTokens(email: string) {
-        const payload = { email };
+    async createTokens(user: any) {
+        const payload = { email: user.email };
         const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
         const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
         return {
-            email: payload.email,
+            email: user.email,
             accessToken,
             refreshToken,
             expiresIn: 3600, // 1 hour in seconds
+            user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                picture: user.picture
+            }
         };
     }
 
@@ -84,7 +85,7 @@ export class AuthService {
             if (!user) {
                 throw new UnauthorizedException('User not found');
             }
-            return this.createTokens(user.email);
+            return this.createTokens(user);
         } catch (e) {
             throw new UnauthorizedException('Invalid refresh token');
         }

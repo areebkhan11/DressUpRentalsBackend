@@ -26,7 +26,6 @@ export class AuthController {
     @Post('google/callback')
     @ApiOperation({ summary: 'Handle Google login callback' })
     async googleCallback(@Body('accessToken') accessToken: string) {
-        console.log(accessToken, "<-----accessToken")
         return this.authService.handleGoogleCallback(accessToken);
     }
 
