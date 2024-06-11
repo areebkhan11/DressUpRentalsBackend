@@ -28,7 +28,8 @@ export class AuthService {
                     firstName: profile.given_name,
                     lastName: profile.family_name ?? "",
                     picture: profile.picture,
-                    provider: 'google'
+                    provider: 'google',
+                    role: 'user'
                 });
             }
             return this.createTokens(user);
@@ -59,7 +60,7 @@ export class AuthService {
     }
 
     async createTokens(user: any) {
-        const payload = { email: user.email };
+        const payload = { email: user.email, role: user.role }; // Include role in payload
         const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
         const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 

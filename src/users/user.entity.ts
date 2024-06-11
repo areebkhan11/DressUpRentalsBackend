@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Product } from '../products/product.entity';
+
 
 @Entity()
 export class User {
@@ -30,4 +32,11 @@ export class User {
     @Column()
     @ApiProperty({ description: 'The authentication provider of the user' })
     provider: string;
+
+    @Column({ default: 'user' }) // Adding role column with default value 'user'
+    role?: string;
+
+
+    @OneToMany(() => Product, product => product.user)
+    products: Product[];
 }
