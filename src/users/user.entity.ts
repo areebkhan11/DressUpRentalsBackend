@@ -30,6 +30,14 @@ export class User {
     picture?: string;
 
     @Column()
+    @ApiProperty({ description: 'The phone number of the user' })
+    phoneNumber: number;
+
+    @Column()
+    @ApiProperty({ description: 'The whatsapp number of the user' })
+    whatsAppNumber?: number;
+
+    @Column()
     @ApiProperty({ description: 'The authentication provider of the user' })
     provider: string;
 

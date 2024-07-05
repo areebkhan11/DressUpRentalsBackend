@@ -1,5 +1,5 @@
 // src/products/dto/create-product.dto.ts
-import { IsString, IsDecimal, IsNotEmpty } from 'class-validator';
+import { IsString, IsDecimal, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateProductDto {
     @IsString()
@@ -11,4 +11,8 @@ export class CreateProductDto {
 
     @IsDecimal()
     price: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    categoryId: number;  // Add this line
 }

@@ -1,5 +1,5 @@
 // src/products/dto/update-product.dto.ts
-import { IsString, IsDecimal, IsOptional } from 'class-validator';
+import { IsString, IsDecimal, IsOptional, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class UpdateProductDto {
     @IsString()
@@ -13,4 +13,9 @@ export class UpdateProductDto {
     @IsDecimal()
     @IsOptional()
     price?: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    categoryId: number;  // Add this line
+
 }
