@@ -16,7 +16,7 @@ export class ProductsController {
 
     @Post()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'seller')
+    @Roles('admin', 'user')
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new product' })
     async create(@Body() createProductDto: CreateProductDto, @Req() req): Promise<Product> {
@@ -37,7 +37,7 @@ export class ProductsController {
 
     @Put(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'seller')
+    @Roles('admin', 'user')
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Update a product by ID' })
     async update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto): Promise<Product> {

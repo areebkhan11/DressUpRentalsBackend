@@ -13,7 +13,8 @@ export const DatabaseProviders = [
             password: configService.get<string>('DATABASE_PASSWORD'),
             database: configService.get<string>('DATABASE_NAME'),
             entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-            synchronize: true, // Set to false in production
+            synchronize: configService.get<boolean>('TYPEORM_SYNC') || false, // Set to false in production
+            logging: configService.get<boolean>('TYPEORM_LOGGING') || false,  // Optional: Enable logging
         }),
     }),
 ];
