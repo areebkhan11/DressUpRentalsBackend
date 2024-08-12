@@ -7,7 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { Product } from '../products/product.entity';
+import { Product } from './product.entity';
 
 @ApiTags('products')
 @Controller('products')
@@ -16,7 +16,7 @@ export class ProductsController {
 
     @Post()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'seller')
+    @Roles('admin', 'user')
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new product' })
     async create(@Body() createProductDto: CreateProductDto, @Req() req): Promise<Product> {
@@ -37,7 +37,7 @@ export class ProductsController {
 
     @Put(':id')
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles('admin', 'seller')
+    @Roles('admin', 'user')
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Update a product by ID' })
     async update(@Param('id', ParseIntPipe) id: number, @Body() updateProductDto: UpdateProductDto): Promise<Product> {

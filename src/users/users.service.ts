@@ -29,6 +29,7 @@ export class UsersService {
             lastName: user.lastName,
             picture: user.picture,
             provider: user.provider,
+            role: 'user',
         });
         return this.usersRepository.save(newUser);
     }
