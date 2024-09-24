@@ -1,11 +1,10 @@
-version: '3.8'
 
 services:
   app:
     build: .
     container_name: nestjs_app
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       DATABASE_HOST: db
       DATABASE_PORT: 5432
